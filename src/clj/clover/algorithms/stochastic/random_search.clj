@@ -2,7 +2,7 @@
 ;; by Nate Murray <nate@xcombinator.com>
 ;; Adapted from Jason Brownlee's 'Clever Algorithms' Project: http://www.CleverAlgorithms.com
 
-(ns clover.algorithms.random-search
+(ns clover.algorithms.stochastic.random-search
   (:require [clojure.contrib.math :as math]))
 
 (defn random-between [min max]
