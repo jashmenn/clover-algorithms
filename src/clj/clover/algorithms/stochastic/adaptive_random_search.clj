@@ -43,14 +43,16 @@
   [(step-with-size bounds current step-size)
    (step-with-size bounds current big-step-size)])
 
+(defn fmt-float [f] (format "%.10f" f))
+
 (defn do-search [iter count bounds step-size current o]
-  (println " > iteration " iter " best=" (current :cost))
-  (if (> iter (o :max-iter)) 
+  (println " > iteration " iter " best=" (fmt-float (current :cost)))
+  (if (> iter (- (o :max-iter) 1)) 
     current
     (let [big-step-size (large-step-size iter step-size o)
           [step big-step] (take-steps bounds current step-size big-step-size)]
       (if (or (<= (step :cost) (current :cost))
-              (<= (big-step :cost (current :cost))))
+               (<= (big-step :cost) (current :cost)))
         (if (<= (big-step :cost) (step :cost))
           (recur (inc iter) 0 bounds big-step-size big-step o)
           (recur (inc iter) 0 bounds step-size     step     o))
@@ -73,5 +75,8 @@
               :s-factor 1.3
               :l-factor 3.0
               :iter-mult 10
-              :max-no-impr 30}]
-    (search bounds opts)))
+              :max-no-impr 30}
+        best (search bounds opts)]
+    (println "Done. Best Solution: " 
+             "c=" (fmt-float (best :cost)) ", "
+             "v=" (map fmt-float (best :vector)))))
