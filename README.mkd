@@ -18,6 +18,7 @@ The Clever Algorithms project is currently hosted online at "http://www.CleverAl
 * Random Search
 * Adaptive Random Search
 * Stochastic Hill Climbing
+* Iterated Local Search
 
 ## Authors
 
