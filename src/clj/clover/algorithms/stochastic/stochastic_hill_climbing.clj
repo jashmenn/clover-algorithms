@@ -24,17 +24,18 @@
     (doall (concat before (list new-val) after))))
 
 (defn random-neighbor [bitstring]
-  (let [pos (Math/round (random-between 0 (count bitstring)))
+  (let [pos (Math/round (random-between 0 
+                                        (- (count bitstring) 1)))
         new-val (if (= (nth bitstring pos) "1") "0" "1")]
     (replace-col-at pos new-val bitstring)))
 
 (defn do-search [iter max-iter num-bits candidate]
-  (println " > iteration" iter ", best=" (candidate :cost))
+  (println " > iteration" iter "best=" (candidate :cost))
   (if (< (- max-iter 1) iter)
     candidate
     (let [new-vec (random-neighbor (candidate :vector))
           new-cost (onemax new-vec)
-          new-candidate (:vector new-vec :cost new-cost)]
+          new-candidate {:vector new-vec :cost new-cost}]
       (if (>= new-cost (candidate :cost))
         (if (= num-bits new-cost)
           new-candidate
@@ -48,7 +49,7 @@
               {:vector new-vec :cost new-cost})))
 
 (defn -main [& args]
-  (let [num-bits 5 
+  (let [num-bits 64 
         max-iter 1000
         best (search max-iter num-bits)] 
     best))
