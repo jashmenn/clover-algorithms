@@ -5,9 +5,12 @@
 (ns clover.algorithms.stochastic.iterated-local-search
   (:require [clojure.contrib.math :as math]))
 
+;; these are xy coordinates from the berlin52 tsp problem. 
+;; optimal is 7542 units
+;; see:
+;; http://www2.iwr.uni-heidelberg.de/groups/comopt/software/TSPLIB95/tsp/
+;; for more problems
 (def berlin52 
-   "these are xy coordinates from the berlin52 tsp problem. 
-see http://www2.iwr.uni-heidelberg.de/groups/comopt/software/TSPLIB95/tsp/ for more problems"
      (partition 2 [565 575 25 185 345 750 945 685 845 655 880 660 25 230 525 1000 580 1175 650 1130 1605 620 1220 580 1465 200 1530 5 845 680 725 370 145 665 415 635 510 875 560 365 300 465 520 585 480 415 835 625 975 580 1215 245 1320 315 1250 400 660 180 410 250 420 555 575 665 1150 1160 700 580 685 595 685 610 770 610 795 645 720 635 760 650 475 960 95 260 875 920 700 500 555 815 830 485 1170 65 830 610 605 625 595 360 1340 725 1740 245]))
 
 (defn euc-2d [p1 p2]
@@ -16,15 +19,24 @@ see http://www2.iwr.uni-heidelberg.de/groups/comopt/software/TSPLIB95/tsp/ for m
     (+ (math/expt (- (first p1) (first p2)) 2)
        (math/expt (- (last  p1) (last  p2)) 2)))))
 
+(defn cost [permutation cities]
+  (reduce (fn [sum [i c1]]
+            (let [c2 (if (= i (dec (count permutation))) 
+                       (first permutation)
+                       (nth permutation (inc i)))]
+              (+ sum (euc-2d (nth cities c1) (nth cities c2))))) 
+          0 (map-indexed (fn [i elem] [i elem]) permutation)))
+
 (defn rand-but-not [max exclude]
   (loop [x (rand-int max)]
     (if (contains? exclude x) (recur (rand-int max)) x)))
 
 (defn reverse-subvec [col start end]
-  (let [p1 (subvec col 0 start)
-        p2 (subvec col start (+ end 1))
-        p3 (subvec col (+ end 1) (count col))]
-    (concat p1 (reverse p2) p3)))
+  (let [ecol (vec col)
+        p1 (subvec ecol 0 start)
+        p2 (subvec ecol start (+ end 1))
+        p3 (subvec ecol (+ end 1) (count ecol))]
+    (vec (concat p1 (reverse p2) p3))))
 
 (defn stochastic-two-opt [permutation]
   (let [psize (count permutation)
@@ -55,11 +67,11 @@ see http://www2.iwr.uni-heidelberg.de/groups/comopt/software/TSPLIB95/tsp/ for m
                    (subvec perm pos3 psize))
         p2 (concat (subvec perm pos2 pos3)
                    (subvec perm pos1 pos2))]
-    (concat p1 p2)))
+    (vec (concat p1 p2))))
 
 (defn perturbation [cities best]
   (let [new-vec (double-bridge-move (best :vector))
-        new-cost (cost (new-vec cities))]
+        new-cost (cost new-vec cities)]
     {:vector new-vec :cost new-cost}))
 
 (defn do-search [iter max-iter max-no-improv best cities]
@@ -72,14 +84,19 @@ see http://www2.iwr.uni-heidelberg.de/groups/comopt/software/TSPLIB95/tsp/ for m
         (recur (inc iter) max-iter max-no-improv candidate cities)
         (recur (inc iter) max-iter max-no-improv best cities)))))
 
+(defn random-permutation [cities]
+  (shuffle (range (count cities))))
+
 (defn search [max-iter max-no-improv cities]
-  (let [new-vec (shuffle cities)
+  (let [new-vec (random-permutation cities)
         new-cost (cost new-vec cities)
         best (local-search {:vector new-vec :cost new-cost}
-                           cities max-no-improv)]))
+                           cities max-no-improv)]
+    (do-search 0 max-iter max-no-improv best cities)))
 
 (defn -main [& args]
   (let [max-iter 100
         max-no-improv 50
         best (search max-iter max-no-improv berlin52)]
-    best))
+    (println "Done. Best Solution: c=" (best :cost) 
+                                  "v=" (pr-str (best :vector)))))
