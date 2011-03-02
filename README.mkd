@@ -13,6 +13,12 @@ The Clever Algorithms project is currently hosted online at "http://www.CleverAl
     lein deps
     lein run -m clover.algorithms.stochastic.random-search
 
+## List of Algorithms
+
+* Random Search
+* Adaptive Random Search
+* Stochastic Hill Climbing
+
 ## Authors
 
 * Clever Algorithms was written by Jason Brownlee
