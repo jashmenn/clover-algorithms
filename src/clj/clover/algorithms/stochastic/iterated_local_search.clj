@@ -75,25 +75,29 @@
         new-cost (cost new-vec cities)]
     {:vector new-vec :cost new-cost}))
 
-(defn do-search [iter max-iter max-no-improv best cities]
+(defn do-search [iter max-iter max-no-improv best cities callback]
   (println " > iteration" iter "best=" (best :cost))
+  (callback iter best)
   (if (< (- max-iter 1) iter)
     best
     (let [candidate (-> (perturbation cities best)
                         (local-search cities max-no-improv))]
       (if (< (candidate :cost) (best :cost))
-        (recur (inc iter) max-iter max-no-improv candidate cities)
-        (recur (inc iter) max-iter max-no-improv best cities)))))
+        (recur (inc iter) max-iter max-no-improv candidate cities callback)
+        (recur (inc iter) max-iter max-no-improv best cities callback)))))
 
 (defn random-permutation [cities]
   (shuffle (range (count cities))))
 
-(defn search [max-iter max-no-improv cities]
-  (let [new-vec (random-permutation cities)
-        new-cost (cost new-vec cities)
-        best (local-search {:vector new-vec :cost new-cost}
-                           cities max-no-improv)]
-    (do-search 0 max-iter max-no-improv best cities)))
+(defn search 
+  ([max-iter max-no-improv cities]
+     (search max-iter max-no-improv cities identity))
+  ([max-iter max-no-improv cities callback]
+     (let [new-vec (random-permutation cities)
+           new-cost (cost new-vec cities)
+           best (local-search {:vector new-vec :cost new-cost}
+                              cities max-no-improv)]
+       (do-search 0 max-iter max-no-improv best cities callback))))
 
 (defn -main [& args]
   (let [max-iter 100
