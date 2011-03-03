@@ -20,6 +20,7 @@
      (draw-cities cities (apply max (map first cities))
                          (apply max (map last  cities))))
   ([cities max-x max-y]
+     (no-stroke)
      (fill-float 209 125 0)
      (doall 
       (map 
@@ -31,19 +32,23 @@
 (def current-solution (atom nil))
 
 (defn draw-solution [solution cities]
-  (doall
-   (map (fn [idx]
-          (if (> idx 0)
-             (stroke-float 10)
-             (line (first (nth cities (dec idx)))
-                   (last  (nth cities (dec idx)))
-                   (first (nth cities idx))
-                   (last  (nth cities idx))))) solution)))
+  (when (seq solution)
+    (doall
+     (map 
+      (fn [idx]
+        (when (> idx 0)
+          (let [[x1 y1] (city-to-pixel [(first (nth cities (nth solution (dec idx))))
+                                        (last  (nth cities (nth solution (dec idx))))])
+                [x2 y2] (city-to-pixel [(first (nth cities (nth solution idx)))
+                                        (last  (nth cities (nth solution idx)))])]
+            (stroke-float 10)
+            (line x1 y1 x2 y2)))) 
+      (range (count solution))))))
 
 (defn fancy-draw
   "An example of a function which does *something*."
   [dst]
-  (background-float 30 30 30)
+  (background-float 30 30 30 200)
   (draw-cities ils/berlin52)
   (draw-solution @current-solution ils/berlin52)
   ;;(background-float (rand-int 256) (rand-int 256) (rand-int 256))
@@ -68,18 +73,8 @@
              (binding [*applet* this]
                (fancy-draw this)))))
 
-(.init p5-applet)
-
-(def swing-frame (JFrame. "Processing with Clojure"))
-(doto swing-frame
-	(.setDefaultCloseOperation JFrame/EXIT_ON_CLOSE)
-	(.setSize (first screen-size) (last screen-size))
-	(.add p5-applet)
-	(.pack)
-	(.show))
-
 (defn run-tsp [cities]
-  (let [max-iter 100
+  (let [max-iter 1000
         max-no-improv 50
         callback (fn [iter best]
                    (swap! current-solution (fn [_] (best :vector))))
@@ -87,5 +82,18 @@
     (println "Done. Best Solution: c=" (best :cost) 
                                   "v=" (pr-str (best :vector)))))
 
-(.start (Thread. (fn [] (run-tsp ils/berlin52))))
+
+(defn -main [& args] 
+
+  (.init p5-applet)
+
+  (def swing-frame (JFrame. "Processing with Clojure"))
+  (doto swing-frame
+    (.setDefaultCloseOperation JFrame/EXIT_ON_CLOSE)
+    (.setSize (first screen-size) (last screen-size))
+    (.add p5-applet)
+    (.pack)
+    (.show))
+
+  (.start (Thread. (fn [] (run-tsp ils/berlin52)))))
 
