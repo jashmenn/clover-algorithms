@@ -3,8 +3,7 @@
   (:use rosado.processing)
   (:import (javax.swing JFrame))
   (:import (processing.core PApplet))
-  (:require [clover.algorithms.stochastic.iterated-local-search :as ils])
-  )
+  (:require [clover.algorithms.stochastic.iterated-local-search :as ils]))
 
 (def screen-size [600 600])
 (def cities-range [0 1800])
@@ -59,31 +58,27 @@
 (def p5-applet
      (proxy [PApplet] []
        (setup []
-              (binding [*applet* this]
-                (size (first screen-size) (last screen-size))
-                (smooth)
-                (no-stroke)
-                (fill 226)
-                (framerate 10)))
+         (binding [*applet* this]
+           (size (first screen-size) (last screen-size))
+           (smooth)
+           (no-stroke)
+           (fill 226)
+           (framerate 10)))
        (draw []
-             (binding [*applet* this]
-               (fancy-draw this)))))
+         (binding [*applet* this]
+           (fancy-draw this)))))
 
 (defn run-tsp [cities]
   (let [max-iter 1000
         max-no-improv 50
-        callback (fn [iter best]
-                   (swap! current-solution (fn [_] (best :vector))))
-        local-callback (fn [solution cost]
-                   (swap! local-solution (fn [_] solution)))
+        cb1 (fn [iter best]     (swap! current-solution (fn [_] (best :vector))))
+        cb2 (fn [solution cost] (swap! local-solution   (fn [_] solution)))
         best (ils/search max-iter max-no-improv cities 
-                         {:callback-best callback :callback-local local-callback})]
+                         {:callback-best cb1 :callback-local cb2})]
     (println "Done. Best Solution: c=" (best :cost) 
-                                  "v=" (pr-str (best :vector)))))
-
+             "v=" (pr-str (best :vector)))))
 
 (defn -main [& args] 
-
   (.init p5-applet)
 
   (def swing-frame (JFrame. "Processing with Clojure"))
