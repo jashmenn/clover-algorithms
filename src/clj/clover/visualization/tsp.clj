@@ -3,7 +3,8 @@
   (:use rosado.processing)
   (:import (javax.swing JFrame))
   (:import (processing.core PApplet))
-  (:require [clover.algorithms.stochastic.iterated-local-search :as ils]))
+  (:require [clover.algorithms.stochastic.iterated-local-search :as ils])
+  )
 
 (def screen-size [600 600])
 (def cities-range [0 1800])
@@ -30,8 +31,9 @@
        cities))))
 
 (def current-solution (atom nil))
+(def local-solution   (atom nil))
 
-(defn draw-solution [solution cities]
+(defn draw-solution [solution cities color]
   (when (seq solution)
     (doall
      (map 
@@ -41,7 +43,7 @@
                                         (last  (nth cities (nth solution (dec idx))))])
                 [x2 y2] (city-to-pixel [(first (nth cities (nth solution idx)))
                                         (last  (nth cities (nth solution idx)))])]
-            (stroke-float 10)
+            (apply stroke-float color)
             (line x1 y1 x2 y2)))) 
       (range (count solution))))))
 
@@ -50,14 +52,8 @@
   [dst]
   (background-float 30 30 30 200)
   (draw-cities ils/berlin52)
-  (draw-solution @current-solution ils/berlin52)
-  ;;(background-float (rand-int 256) (rand-int 256) (rand-int 256))
-  ;;(fill-float (rand-int 125) (rand-int 125) (rand-int 125))
-  ;;(ellipse 100 100 (rand-int 90) (rand-int 90))
-  ;;(stroke-float 10)
-  ;;(line 10 10 (rand-int 150) (rand-int 150))
-  ;;(no-stroke)
-  ;;(filter-kind INVERT)
+  (draw-solution @local-solution ils/berlin52 [0 59 86])
+  (draw-solution @current-solution ils/berlin52 [255 255 255])
   (framerate 10))
 
 (def p5-applet
@@ -78,7 +74,10 @@
         max-no-improv 50
         callback (fn [iter best]
                    (swap! current-solution (fn [_] (best :vector))))
-        best (ils/search max-iter max-no-improv cities callback)]
+        local-callback (fn [solution cost]
+                   (swap! local-solution (fn [_] solution)))
+        best (ils/search max-iter max-no-improv cities 
+                         {:callback-best callback :callback-local local-callback})]
     (println "Done. Best Solution: c=" (best :cost) 
                                   "v=" (pr-str (best :vector)))))
 
