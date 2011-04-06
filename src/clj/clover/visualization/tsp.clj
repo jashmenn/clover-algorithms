@@ -52,6 +52,7 @@
   ;;(ellipse 100 100 (rand-int 90) (rand-int 90))
   ;;(stroke-float 10)
   (line 10 10 (rand-int 150) (rand-int 150))
+  ;;(line 10 10 (rand-int 150) (rand-int 150))
   ;;(no-stroke)
   ;;(filter-kind INVERT)
   (framerate 10))
@@ -68,7 +69,6 @@
        (draw []
              (binding [*applet* this]
                (fancy-draw this)))))
-
 
 (def swing-frame (JFrame. "Processing with Clojure"))
 
@@ -91,6 +91,3 @@
     (.show)) 
   ;;(.start (Thread. (fn [] (run-tsp ils/berlin52))))
   )
-
-
-
