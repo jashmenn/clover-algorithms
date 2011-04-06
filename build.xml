@@ -1,0 +1,10 @@
+<project name="cloveralgorithms" default="all">
+  <taskdef name="jarbundler" classname="net.sourceforge.jarbundler.JarBundler" />
+
+  <target name="osx">
+    <jarbundler dir="build"
+      name="CloverAlgorithms"
+      mainclass="clover.visualization.tsp" 
+      jar="build/clover-1.0.0-SNAPSHOT-standalone.jar" />
+  </target>
+</project>

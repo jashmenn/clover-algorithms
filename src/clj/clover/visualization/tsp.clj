@@ -3,7 +3,8 @@
   (:use rosado.processing)
   (:import (javax.swing JFrame))
   (:import (processing.core PApplet))
-  (:require [clover.algorithms.stochastic.iterated-local-search :as ils]))
+  (:require [clover.algorithms.stochastic.iterated-local-search :as ils])
+  (:gen-class))
 
 (def screen-size [600 600])
 (def cities-range [0 1800])
