@@ -1,0 +1,35 @@
+# clover
+
+This project is my personal repository of the Clever Algorithms code ported to Clojure.
+
+## Clever Algorithms
+
+The Clever Algorithms project is an effort to describe a large number of algorithmic techniques from the the field of Artificial Intelligence in a complete, consistent, and centralized manner such that they are accessible, usable, and understandable. 
+
+The Clever Algorithms project is currently hosted online at "http://www.CleverAlgorithms.com":http://www.CleverAlgorithms.com 
+
+## Usage
+
+    lein deps
+    lein run -m clover.algorithms.stochastic.random-search
+
+## List of Algorithms
+
+* Random Search
+* Adaptive Random Search
+* Stochastic Hill Climbing
+* Iterated Local Search
+
+## Authors
+
+* Clever Algorithms was written by Jason Brownlee
+
+* This repository was started by Nate Murray <nate@natemurray.com>
+
+## License
+
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/2.5/au/">
+![creative-commons](http://i.creativecommons.org/l/by-nc-sa/2.5/au/88x31.png)
+</a>
+
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/2.5/au/">Creative Commons Attribution-Noncommercial-Share Alike 2.5 Australia License</a>, the same as the original Clever Algorithms project.
