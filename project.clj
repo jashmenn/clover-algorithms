@@ -13,4 +13,5 @@
   :target-dir "build"
   :source-path "src/clj"
   :java-source-path "src/java"
+  :aot [ clover.visualization.tsp ]
   )
