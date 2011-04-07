@@ -4,6 +4,7 @@
   (:import (javax.swing JFrame))
   (:import (processing.core PApplet))
   (:require [clover.algorithms.stochastic.iterated-local-search :as ils])
+  (:require [clover.data :as data])
   (:gen-class))
 
 (def screen-size [600 600])
@@ -52,9 +53,9 @@
   "An example of a function which does *something*."
   [dst]
   (background-float 30 30 30 200)
-  (draw-cities ils/berlin52)
-  (draw-solution @local-solution ils/berlin52 [0 59 86])
-  (draw-solution @current-solution ils/berlin52 [255 255 255])
+  (draw-cities data/berlin52)
+  (draw-solution @local-solution data/berlin52 [0 59 86])
+  (draw-solution @current-solution data/berlin52 [255 255 255])
   (framerate 10))
 
 (def p5-applet
@@ -90,4 +91,4 @@
     (.add p5-applet)
     (.pack)
     (.show))
-  (.start (Thread. (fn [] (run-tsp ils/berlin52)))))
+  (.start (Thread. (fn [] (run-tsp data/berlin52)))))
