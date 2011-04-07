@@ -9,3 +9,6 @@
     (+ (Math/pow (double (- (first p1) (first p2))) 2)
        (Math/pow (double (- (last  p1) (last  p2))) 2)))))
 
+(defn randomize [col]
+  (shuffle (range (count col))))
+
