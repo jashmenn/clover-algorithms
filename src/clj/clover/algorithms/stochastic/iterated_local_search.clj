@@ -36,12 +36,13 @@
         [min max] (sort [c1 c2])]
     (reverse-subvec permutation min max)))
 
-(defn local-search [best-in cities max-no-improv]
+(defn local-search [best-in cities max-no-improv opts]
   (loop [count 0 best best-in]
     (if (>= count max-no-improv) 
       best
       (let [new-vec (stochastic-two-opt (best :vector))
-           new-cost (cost new-vec cities)]
+            new-cost (cost new-vec cities)]
+       ((:callback-local opts) new-vec new-cost)
        (if (< new-cost (best :cost))
          (recur 0 {:vector new-vec :cost new-cost})
          (recur (inc count) best))))))
@@ -62,29 +63,30 @@
         new-cost (cost new-vec cities)]
     {:vector new-vec :cost new-cost}))
 
-(defn do-search [iter max-iter max-no-improv best cities callback]
+(defn do-search [iter max-iter max-no-improv best cities opts]
   (println " > iteration" iter "best=" (best :cost))
-  (callback iter best)
+  ((:callback-best opts) iter best)
   (if (< (- max-iter 1) iter)
     best
     (let [candidate (-> (perturbation cities best)
-                        (local-search cities max-no-improv))]
+                        (local-search cities max-no-improv opts))]
       (if (< (candidate :cost) (best :cost))
-        (recur (inc iter) max-iter max-no-improv candidate cities callback)
-        (recur (inc iter) max-iter max-no-improv best cities callback)))))
+        (recur (inc iter) max-iter max-no-improv candidate cities opts)
+        (recur (inc iter) max-iter max-no-improv best cities opts)))))
 
 (defn random-permutation [cities]
   (shuffle (range (count cities))))
 
 (defn search 
   ([max-iter max-no-improv cities]
-     (search max-iter max-no-improv cities identity))
-  ([max-iter max-no-improv cities callback]
+     (search max-iter max-no-improv cities 
+             {:callback-best (fn [_ _]) :callback-local (fn [_ _])}))
+  ([max-iter max-no-improv cities opts]
      (let [new-vec (random-permutation cities)
            new-cost (cost new-vec cities)
            best (local-search {:vector new-vec :cost new-cost}
-                              cities max-no-improv)]
-       (do-search 0 max-iter max-no-improv best cities callback))))
+                              cities max-no-improv opts)]
+       (do-search 0 max-iter max-no-improv best cities opts))))
 
 (defn -main [& args]
   (let [max-iter 100
