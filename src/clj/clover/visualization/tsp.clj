@@ -43,10 +43,10 @@
 (defn fancy-draw
   "An example of a function which does *something*."
   [dst]
-  (prn "draw")
   (background-float 30 30 30)
-  (draw-cities ils/berlin52)
-  (draw-solution @current-solution ils/berlin52)
+  ;;(draw-cities ils/berlin52)
+  ;;(draw-solution @current-solution ils/berlin52)
+
   ;;(background-float (rand-int 256) (rand-int 256) (rand-int 256))
   ;;(fill-float (rand-int 125) (rand-int 125) (rand-int 125))
   ;;(ellipse 100 100 (rand-int 90) (rand-int 90))
